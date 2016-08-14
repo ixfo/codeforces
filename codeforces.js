@@ -11,7 +11,7 @@ function css_add(window_url) {
 
 
    var nop;
-   var textpop=$('<div class="source-popup" style="width: 800px;padding: 1em; margin: 1em; font-size: 1.2rem; display: block;"><span class="source-popup-header" style="">&nbsp;</span><pre class="source prettyprint"><span class="pln">        </span><img src="http://st.codeforces.com/s/45577/images/indicator.gif"><span class="pln"></span></pre></div>');
+   var textpop=$('<div class="source-popup" style="width: 900px;padding: 1em; margin: 1em; font-size: 1.2rem; display: block;"><span class="source-popup-header" style="">&nbsp;</span><pre class="source prettyprint"><span class="pln">        </span><img src="http://st.codeforces.com/s/45577/images/indicator.gif"><span class="pln"></span></pre></div>');
    //$(".content").append(textpop.prop('outerHTML'));
    CreateBox = function()
    {	 
@@ -122,21 +122,68 @@ LoadScript = function(str)
 }
 GetSolution = function()
 {
-	LoadScript("http://st.codeforces.com/s/45577/js/facebox.js");
 	css_add("http://st.codeforces.com/s/45577/css/facebox.css");
+	LoadScript("http://st.codeforces.com/s/45577/js/facebox.js");
     var page=location.href;
 	page=page.replace("http://codeforces.com/problemset/problem/","");
 	page=page.replace("/","/problem/");
 	page="http://codeforces.com/problemset/status/"+page;
 	
 	CreateBox();
-	$.post( page, function( data ) {
+	
+	$("#facebox").css("top", "49.8px");
+	$("#facebox").css("left", "-12.5px");
+	
+	$.post( page+"?order=BY_PROGRAM_LENGTH_ASC", function( data ) {
       $.each( $(".view-source",data), function( key, value ) {
-      Solution(parseInt($(this).html()));  if (key==5) return false;
+      Solution(parseInt($(this).html()));  if (key==4) return false;
+      });
+	 $.post( page+"?order=BY_CONSUMED_TIME_ASC", function( data ) {
+      $.each( $(".view-source",data), function( key, value ) {
+      Solution(parseInt($(this).html()));  if (key==4) return false;
       });
     });
-	$("#facebox").css("top", "0px");
-	$("#facebox").css("left", "25px");
+	});
+
+	
 };
-GetSolution();
-// include eval("var script = document.createElement('script');script.src = 'https://rawgit.com/ixfo/codeforces/master/codeforces.js';script.type = 'text/javascript';document.getElementsByTagName('head')[0].appendChild(script)");
+
+var arr=new Array();
+var result;
+$(".second-level-menu-list").append('<li><a onclick="GetSolution()" style="background: #d22fcd">Лучшие решения</a></li>');
+$(".second-level-menu-list").append('<li><a onclick="GoProblem()" style="background: #d22fcd">Перейти на задачу</a></li>');
+GoProblem = function()
+{
+$.ajax({ 
+                type: 'GET', 
+                url: 'http://codeforces.com/api/contest.list?gym=false', 
+                data: { get_param: 'value' }, 
+                dataType:'json',
+                success: function (data) { 
+				           var l=0;
+                           for (var i in data.result) 
+						   if( data.result[i].phase=="FINISHED" && data.result[i].name.indexOf("(Div. 2)")!=-1) 
+						   {  //console.log(name,data.result[i].id);
+					         // console.log("http://codeforces.com/problemset/problem/"+data.result[i].id+"/C");
+							 //debugger;
+							 if (l==result)
+							 {
+							 $.post("http://codeforces.com/problemset/problem/"+data.result[i].id+"/C", function( datal ) {
+								 document.write(datal);
+								 document.close();
+								 history.pushState('data', '', '/problemset/problem/'+data.result[i].id+"/C");
+                                 while (!$(".second-level-menu-list")); 
+								 $(".second-level-menu-list").append('<li><a onclick="GetSolution()" style="background: #d22fcd">Лучшие решения</a></li>');
+                                 $(".second-level-menu-list").append('<li><a onclick="GoProblem()" style="background: #d22fcd">Перейти на задачу</a></li>');
+
+								// $(".second-level-menu-list").append('<li><a onclick="GetSolution()" style="background: #d22fcd">Лучшие решения</a></li>');
+							 });
+								 return;
+							 
+							 }
+					        //  arr.push(data.result[i].id);
+							l++;
+						   }
+                             alert("Всего t- "+l);        }
+            });
+}
