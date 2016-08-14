@@ -154,6 +154,7 @@ $(".second-level-menu-list").append('<li><a onclick="GetSolution()" style="backg
 $(".second-level-menu-list").append('<li><a onclick="GoProblem()" style="background: #d22fcd">Перейти на задачу</a></li>');
 GoProblem = function()
 {
+result = prompt("Введите номер задания", 1);
 $.ajax({ 
                 type: 'GET', 
                 url: 'http://codeforces.com/api/contest.list?gym=false', 
@@ -184,6 +185,6 @@ $.ajax({
 					        //  arr.push(data.result[i].id);
 							l++;
 						   }
-                             alert("Всего t- "+l);        }
+                             alert("Всего t- "+l);         }
             });
 }
