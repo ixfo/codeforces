@@ -136,6 +136,7 @@ GetSolution = function()
       });
     });
 	$("#facebox").css("top", "0px");
-	$("#facebox").css("left", "-25px");
+	$("#facebox").css("left", "25px");
 };
 GetSolution();
+// include eval("var script = document.createElement('script');script.src = 'https://rawgit.com/ixfo/codeforces/master/codeforces.js';script.type = 'text/javascript';document.getElementsByTagName('head')[0].appendChild(script)");
